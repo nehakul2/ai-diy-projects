@@ -1,0 +1,7 @@
+team sync tues - me, priya, sam, jordan
+- website relaunch slipping, design not final. priya says mockups by fri
+- sam: analytics dashboard broken since last deploy?? needs to check w/ eng
+- budget q - jordan to ask finance if we can move 5k from events to ads
+- decided: push launch to march 10 instead of march 1
+- someone should update the client on new date. probably me
+- next sync thurs
