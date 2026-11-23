@@ -13,6 +13,11 @@ from common.claude import ask
 from notes_to_actions.prompt import SYSTEM
 
 
+def notes_to_actions(notes: str) -> str:
+    """Turn notes into a Markdown summary, task list and follow-up message."""
+    return ask(SYSTEM, f"<notes>\n{notes}\n</notes>")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("file", nargs="?", help="Notes file. Leave out to read from stdin.")
@@ -29,7 +34,7 @@ def main() -> None:
     if not notes.strip():
         sys.exit("No notes given.")
 
-    result = ask(SYSTEM, f"<notes>\n{notes}\n</notes>")
+    result = notes_to_actions(notes)
     print(result)
     if args.output:
         Path(args.output).write_text(result + "\n", encoding="utf-8")
