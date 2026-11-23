@@ -1,0 +1,16 @@
+Senior Product Analyst - Payments (Remote, US)
+
+About the role
+You'll partner with product managers and engineers to measure and improve our payments experience.
+
+Requirements
+- 4+ years in analytics, ideally product analytics
+- Strong SQL; experience with dbt or similar data modeling tools
+- Experience designing and analyzing experiments (A/B tests)
+- Python or R for analysis
+- Comfortable presenting insights to senior stakeholders
+- Experience with a BI tool (Looker preferred)
+
+Nice to have
+- Payments or fintech domain knowledge
+- Familiarity with causal inference methods

@@ -11,8 +11,8 @@ lives in `common/`.
 | 3 | [Inbox clean-up helper](inbox_cleanup/) | Done |
 | 4 | [Travel planner that checks the boring bits](travel_planner/) | Done |
 | 5 | [Downloads organiser](downloads_organiser/) | Done |
-| 6 | Resume vs job description matcher | Next |
-| 7 | Weekly life-admin planner | |
+| 6 | [Resume vs job description matcher](resume_matcher/) | Done |
+| 7 | Weekly life-admin planner | Next |
 | 8 | Job-search tracker | |
 | 9 | Saved-content organiser | |
 | 10 | Decision journal pattern finder | |
