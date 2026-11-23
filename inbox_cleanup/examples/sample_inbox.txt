@@ -1,0 +1,23 @@
+From: Priya Shah <priya@example.com>
+Subject: Can you review the Q1 deck by Thursday?
+Hi! Could you take a look at the attached deck and send comments by Thursday? Mainly slides 4-7.
+---
+From: DealsDaily <offers@dealsdaily.example>
+Subject: 70% OFF everything - today only!!!
+Don't miss our biggest sale of the year. Click here to shop. Unsubscribe | Manage preferences
+---
+From: Airline Bookings <noreply@airline.example>
+Subject: Your booking confirmation ABC123
+Your flight to Chicago on 14 Dec is confirmed. Seat 12A. Check in opens 24h before departure.
+---
+From: GitHub <noreply@github.com>
+Subject: [nehakul2/ai-diy-projects] PR #2 merged
+Your pull request was merged.
+---
+From: Security Team <security@paypa1-alerts.example>
+Subject: Urgent: your account will be suspended
+We noticed unusual activity. Verify your password within 24 hours at the link below or lose access.
+---
+From: Sam Lee <sam@example.com>
+Subject: dinner sat?
+are you free saturday evening? thinking that new thai place around 7
