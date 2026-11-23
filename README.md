@@ -15,8 +15,8 @@ lives in `common/`.
 | 7 | [Weekly life-admin planner](life_admin_planner/) | Done |
 | 8 | [Job-search tracker](job_search_tracker/) | Done |
 | 9 | [Saved-content organiser](saved_content_organiser/) | Done |
-| 10 | Decision journal pattern finder | Next |
-| 11 | Meeting cost calculator | |
+| 10 | [Decision journal pattern finder](decision_journal/) | Done |
+| 11 | Meeting cost calculator | Next |
 | 12 | Reading list with a spoken summary | |
 | 13 | Personal finance explainer | |
 | 14 | Photo organiser by event | |
