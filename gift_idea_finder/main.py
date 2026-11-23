@@ -20,6 +20,16 @@ def prompt_for(label: str) -> str:
         return ""
 
 
+def find_gifts(who: str, budget: str, likes: str, occasion: str = "", country: str = "") -> str:
+    """Search the web and return five gift ideas with links, as Markdown."""
+    details = [f"Person: {who}", f"Budget: {budget}", f"They like: {likes}"]
+    if occasion:
+        details.append(f"Occasion: {occasion}")
+    if country:
+        details.append(f"Shop in: {country}")
+    return ask(SYSTEM, "\n".join(details), tools=[WEB_SEARCH])
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--who", help="Who the gift is for, e.g. 'my dad, 65, retired teacher'.")
@@ -36,14 +46,8 @@ def main() -> None:
     if not (who and budget and likes):
         sys.exit("Need who the gift is for, a budget, and a few things they like.")
 
-    details = [f"Person: {who}", f"Budget: {budget}", f"They like: {likes}"]
-    if args.occasion:
-        details.append(f"Occasion: {args.occasion}")
-    if args.country:
-        details.append(f"Shop in: {args.country}")
-
     print("Searching for ideas (this can take a minute)...", file=sys.stderr)
-    result = ask(SYSTEM, "\n".join(details), tools=[WEB_SEARCH])
+    result = find_gifts(who, budget, likes, args.occasion, args.country)
     print(result)
     if args.output:
         Path(args.output).write_text(result + "\n", encoding="utf-8")
