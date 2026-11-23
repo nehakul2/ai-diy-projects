@@ -12,6 +12,33 @@ WEB_SEARCH = {"type": "web_search_20260209", "name": "web_search", "max_uses": 8
 MAX_CONTINUATIONS = 5
 
 
+def _clean_key() -> str | None:
+    """Read ANTHROPIC_API_KEY, dropping stray spaces, newlines or quotes from copy-paste."""
+    raw = os.environ.get("ANTHROPIC_API_KEY")
+    if raw is None:
+        return None
+    return raw.strip().strip("'\"").strip() or None
+
+
+def _api_message(e: anthropic.APIStatusError) -> str:
+    """The API's own error text, e.g. 'invalid x-api-key'."""
+    body = e.body if isinstance(e.body, dict) else {}
+    return body.get("error", {}).get("message") or e.message
+
+
+def _key_hint(key: str | None) -> str:
+    """Describe the key without revealing it, to help spot paste mistakes."""
+    if not key:
+        return "ANTHROPIC_API_KEY is not set in this Terminal window."
+    problems = []
+    if not key.startswith("sk-ant-"):
+        problems.append("it doesn't start with sk-ant-")
+    if any(c.isspace() for c in key):
+        problems.append("it contains a space or line break")
+    hint = f"Key in use: {key[:10]}...{key[-4:]} ({len(key)} characters)"
+    return hint + (f"; looks wrong because {' and '.join(problems)}." if problems else ".")
+
+
 def ask(
     system: str,
     user: str,
@@ -26,7 +53,8 @@ def ask(
     messages = [{"role": "user", "content": user}]
     extra = {"tools": tools} if tools else {}
     try:
-        client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY
+        key = _clean_key()
+        client = anthropic.Anthropic(api_key=key) if key else anthropic.Anthropic()
         for _ in range(MAX_CONTINUATIONS + 1):
             response = client.beta.messages.create(
                 model=MODEL,
@@ -47,12 +75,18 @@ def ask(
         if "authentication" not in str(e):
             raise
         sys.exit("No Claude API key found. Set ANTHROPIC_API_KEY (see README).")
-    except anthropic.AuthenticationError:
-        sys.exit("Claude API key missing or invalid. Set ANTHROPIC_API_KEY (see README).")
+    except anthropic.AuthenticationError as e:
+        sys.exit(
+            f"The API rejected the key (401: {_api_message(e)}).\n{_key_hint(key)}\n"
+            "Check the key is active at console.anthropic.com > API Keys, then run "
+            "export ANTHROPIC_API_KEY=... again in this same window."
+        )
+    except anthropic.PermissionDeniedError as e:
+        sys.exit(f"The key works but isn't allowed to do this (403): {_api_message(e)}")
     except anthropic.RateLimitError:
         sys.exit("Hit the API rate limit. Wait a minute and try again.")
     except anthropic.APIStatusError as e:
-        sys.exit(f"Claude API error {e.status_code}: {e.message}")
+        sys.exit(f"Claude API error {e.status_code}: {_api_message(e)}")
     except anthropic.APIConnectionError:
         sys.exit("Couldn't reach the Claude API. Check your internet connection.")
 
