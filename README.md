@@ -19,8 +19,8 @@ lives in `common/`.
 | 11 | [Meeting cost calculator](meeting_cost_calculator/) | Done |
 | 12 | [Reading list with a spoken summary](reading_list/) | Done |
 | 13 | [Personal finance explainer](finance_explainer/) | Done |
-| 14 | Photo organiser by event | Next |
-| 15 | Self-updating personal dashboard | |
+| 14 | [Photo organiser by event](photo_organiser/) | Done |
+| 15 | Self-updating personal dashboard | Next |
 | 16 | Content-idea research assistant | |
 | 17 | Team FAQ bot with sources | |
 | 18 | Ask-your-notes assistant | |
