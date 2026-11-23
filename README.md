@@ -9,8 +9,8 @@ lives in `common/`.
 | 1 | [Notes into actions](notes_to_actions/) | Done |
 | 2 | [Gift idea finder](gift_idea_finder/) | Done |
 | 3 | [Inbox clean-up helper](inbox_cleanup/) | Done |
-| 4 | Travel planner that checks the boring bits | Next |
-| 5 | Downloads organiser | |
+| 4 | [Travel planner that checks the boring bits](travel_planner/) | Done |
+| 5 | Downloads organiser | Next |
 | 6 | Resume vs job description matcher | |
 | 7 | Weekly life-admin planner | |
 | 8 | Job-search tracker | |

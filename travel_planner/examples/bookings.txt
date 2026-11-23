@@ -1,0 +1,8 @@
+Booking ref QX7L2P
+Passenger: Neha K.
+Flight 1: QR 4  London Heathrow (LHR) -> Doha (DOH)  Tue 3 Mar  dep 08:35 arr 18:20  Economy Classic
+Flight 2: QR 806 Doha (DOH) -> Tokyo Narita (NRT)  Tue 3 Mar  dep 19:25 arr Wed 4 Mar 11:35  Economy Classic
+Hotel: Shinjuku, 4-10 Mar
+Train: Tokyo -> Kyoto, 10 Mar (not booked yet)
+Flight 3: Kansai (KIX) -> Seoul Incheon (ICN)  Sun 15 Mar  low-cost carrier, basic fare, 7kg cabin bag only
+Return: ICN -> LHR  Tue 17 Mar
