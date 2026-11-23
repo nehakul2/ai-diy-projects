@@ -10,8 +10,8 @@ lives in `common/`.
 | 2 | [Gift idea finder](gift_idea_finder/) | Done |
 | 3 | [Inbox clean-up helper](inbox_cleanup/) | Done |
 | 4 | [Travel planner that checks the boring bits](travel_planner/) | Done |
-| 5 | Downloads organiser | Next |
-| 6 | Resume vs job description matcher | |
+| 5 | [Downloads organiser](downloads_organiser/) | Done |
+| 6 | Resume vs job description matcher | Next |
 | 7 | Weekly life-admin planner | |
 | 8 | Job-search tracker | |
 | 9 | Saved-content organiser | |

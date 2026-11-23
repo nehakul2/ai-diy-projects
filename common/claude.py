@@ -45,11 +45,16 @@ def ask(
     effort: str = "medium",
     max_tokens: int = 16000,
     tools: list | None = None,
+    schema: dict | None = None,
 ) -> str:
     """Send one prompt to Claude and return the text reply.
 
     Pass tools=[WEB_SEARCH] to let Claude search the web while answering.
+    Pass schema={...} (a JSON Schema) to get back JSON text that matches it.
     """
+    output_config = {"effort": effort}
+    if schema:
+        output_config["format"] = {"type": "json_schema", "schema": schema}
     messages = [{"role": "user", "content": user}]
     extra = {"tools": tools} if tools else {}
     try:
@@ -61,7 +66,7 @@ def ask(
                 max_tokens=max_tokens,
                 system=system,
                 messages=messages,
-                output_config={"effort": effort},
+                output_config=output_config,
                 # If the main model declines, the API retries on a suitable fallback model.
                 betas=["server-side-fallback-2026-07-01"],
                 fallbacks="default",

@@ -39,6 +39,11 @@ def _pasted_key():
             os.environ["ANTHROPIC_API_KEY"] = old
 
 
+# Public name for pages that need the pasted key around their own call
+# (for example, a page that keeps a plan in session state instead of using run_and_show).
+pasted_key_for_call = _pasted_key
+
+
 def run_and_show(fn, *args, spinner: str = "Asking Claude...", filename: str = "result.md", **kwargs) -> None:
     """Call a project function, show its Markdown result, and offer a download.
 
