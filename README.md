@@ -7,8 +7,8 @@ lives in `common/`.
 | # | Project | Status |
 |---|---------|--------|
 | 1 | [Notes into actions](notes_to_actions/) | Done |
-| 2 | Gift idea finder | Next |
-| 3 | Inbox clean-up helper | |
+| 2 | [Gift idea finder](gift_idea_finder/) | Done |
+| 3 | Inbox clean-up helper | Next |
 | 4 | Travel planner that checks the boring bits | |
 | 5 | Downloads organiser | |
 | 6 | Resume vs job description matcher | |
