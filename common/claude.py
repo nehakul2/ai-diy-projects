@@ -41,7 +41,7 @@ def _key_hint(key: str | None) -> str:
 
 def ask(
     system: str,
-    user: str,
+    user: str | list,
     effort: str = "medium",
     max_tokens: int = 16000,
     tools: list | None = None,
@@ -51,6 +51,7 @@ def ask(
 
     Pass tools=[WEB_SEARCH] to let Claude search the web while answering.
     Pass schema={...} (a JSON Schema) to get back JSON text that matches it.
+    `user` can be plain text or a list of content blocks (for example a PDF document block).
     """
     output_config = {"effort": effort}
     if schema:

@@ -1,0 +1,18 @@
+Alex Rivera, Data Analyst, Chicago
+
+EXPERIENCE
+Data Analyst, BrightCart (online grocery), 2022 - present
+- Built weekly sales dashboards in Tableau used by 40 store managers
+- Wrote SQL queries in Snowflake to track delivery times and basket size
+- Ran A/B tests on checkout page changes; one test lifted conversion by 3%
+- Automated a manual Excel report with Python (pandas), saving 6 hours a week
+
+Junior Analyst, Lakeside Bank, 2020 - 2022
+- Cleaned and reconciled transaction data in Excel
+- Presented monthly KPI summaries to the operations team
+
+SKILLS
+SQL, Python (pandas), Tableau, Excel, A/B testing, Snowflake
+
+EDUCATION
+BS Economics, University of Illinois, 2020
