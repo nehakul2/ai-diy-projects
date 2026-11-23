@@ -1,0 +1,22 @@
+Product Analyst, Growth - Streamline (Remote, US)
+Salary: $105,000 - $125,000
+Apply by December 15, 2026
+
+Streamline makes budgeting software for small businesses. As our first Growth analyst you'll help the team understand how customers find, try and stick with the product.
+
+What you'll do
+- Own dashboards for sign-up, activation and retention funnels
+- Design and analyze pricing and onboarding experiments
+- Work with marketing to measure campaign performance
+
+What we're looking for
+- 2+ years in a product or marketing analytics role
+- Strong SQL and experience with a BI tool (we use Mode)
+- Experience running A/B tests and explaining results to non-technical teams
+- Python for analysis
+
+Nice to have
+- Experience at a B2B SaaS company
+- Familiarity with Segment or Amplitude
+
+To apply, submit your resume and a short note (max 200 words) on an experiment you're proud of.
