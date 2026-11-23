@@ -22,7 +22,12 @@ def from_text(text: str) -> list[str]:
 
 def from_eml(path: Path) -> str:
     """One saved email file (most mail apps can drag-and-drop or 'Save as' .eml)."""
-    msg = email.message_from_bytes(path.read_bytes(), policy=policy.default)
+    return from_eml_bytes(path.read_bytes())
+
+
+def from_eml_bytes(data: bytes) -> str:
+    """Same as from_eml, for raw bytes (for example an uploaded file)."""
+    msg = email.message_from_bytes(data, policy=policy.default)
     body = msg.get_body(preferencelist=("plain", "html"))
     text = body.get_content() if body else ""
     headers = [f"{h}: {msg[h]}" for h in ("From", "Subject", "Date", "List-Unsubscribe") if msg[h]]
