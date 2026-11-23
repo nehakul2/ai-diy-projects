@@ -20,8 +20,8 @@ lives in `common/`.
 | 12 | [Reading list with a spoken summary](reading_list/) | Done |
 | 13 | [Personal finance explainer](finance_explainer/) | Done |
 | 14 | [Photo organiser by event](photo_organiser/) | Done |
-| 15 | Self-updating personal dashboard | Next |
-| 16 | Content-idea research assistant | |
+| 15 | [Self-updating personal dashboard](personal_dashboard/) | Done |
+| 16 | Content-idea research assistant | Next |
 | 17 | Team FAQ bot with sources | |
 | 18 | Ask-your-notes assistant | |
 

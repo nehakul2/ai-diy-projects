@@ -1,0 +1,8 @@
+{
+  "name": "",
+  "location": "San Francisco, CA",
+  "topics": ["AI tools for product managers", "Bay Area weekend events"],
+  "questions": ["Is there any BART disruption this week?"],
+  "calendar": "life_admin_planner/examples/calendar.ics",
+  "include": ["calendar", "jobs", "decisions", "reading"]
+}
