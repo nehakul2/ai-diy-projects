@@ -8,6 +8,8 @@ MODEL = os.environ.get("CLAUDE_MODEL", "claude-opus-5-5")
 
 # Server-side web search: Claude searches the web itself, no extra code needed.
 WEB_SEARCH = {"type": "web_search_20260209", "name": "web_search", "max_uses": 8}
+# Server-side web fetch: Claude reads a URL that appears in the prompt.
+WEB_FETCH = {"type": "web_fetch_20260209", "name": "web_fetch", "max_uses": 3}
 
 MAX_CONTINUATIONS = 5
 
