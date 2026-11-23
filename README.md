@@ -43,5 +43,25 @@ export ANTHROPIC_API_KEY=sk-ant-...   # Windows: set ANTHROPIC_API_KEY=sk-ant-..
 
 Then follow the README in each project folder. Run commands from the repo root.
 
+## Test every project in your browser
+
+Instead of typing commands, you can try each project in a simple web page.
+From the repo root, with your virtual environment active:
+
+```bash
+streamlit run app.py
+```
+
+Your browser opens at http://localhost:8501. Pick a project in the left sidebar,
+fill in the form and press the button. The first time, Streamlit may ask for an
+email in the Terminal: just press Enter to skip. Press Ctrl-C in the Terminal to stop it.
+
+The page uses the `ANTHROPIC_API_KEY` you exported. If you didn't set one, paste a key
+into the sidebar box. A pasted key stays in that browser tab's memory and is never saved.
+
+**Adding a project to the test page:** create `<project>/ui.py` with `TITLE`, `ORDER`
+and a `render()` function that calls the project's own functions (see
+`notes_to_actions/ui.py`). The page picks it up automatically.
+
 By default the projects use Claude Opus 5.5. To try another model, set
 `CLAUDE_MODEL`, e.g. `export CLAUDE_MODEL=claude-haiku-5-5` for a cheaper one.
