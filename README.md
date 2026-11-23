@@ -12,8 +12,8 @@ lives in `common/`.
 | 4 | [Travel planner that checks the boring bits](travel_planner/) | Done |
 | 5 | [Downloads organiser](downloads_organiser/) | Done |
 | 6 | [Resume vs job description matcher](resume_matcher/) | Done |
-| 7 | Weekly life-admin planner | Next |
-| 8 | Job-search tracker | |
+| 7 | [Weekly life-admin planner](life_admin_planner/) | Done |
+| 8 | Job-search tracker | Next |
 | 9 | Saved-content organiser | |
 | 10 | Decision journal pattern finder | |
 | 11 | Meeting cost calculator | |
