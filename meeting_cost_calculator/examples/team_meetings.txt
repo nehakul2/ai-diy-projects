@@ -1,0 +1,9 @@
+Our product team (8 people) has these recurring meetings:
+
+- Daily standup, 30 minutes, every weekday, all 8 of us. Mostly people reading out what they did yesterday.
+- Weekly planning on Monday, 1 hour, all 8 plus our PM and designer (10 people).
+- Weekly status update for leadership, 45 minutes, 6 people: we walk through a slide deck that is sent beforehand anyway.
+- Fortnightly retro, 1 hour, the 8 engineers.
+- Monthly all-hands, 90 minutes, 40 people across the department. Mostly announcements, Q&A at the end.
+- Weekly 1:1s between me and each of my 5 reports, 30 minutes each (2 people each).
+- Bi-weekly "sync" with the data team, 1 hour, 7 people. Nobody remembers why it started.
