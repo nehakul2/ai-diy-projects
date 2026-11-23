@@ -17,8 +17,8 @@ lives in `common/`.
 | 9 | [Saved-content organiser](saved_content_organiser/) | Done |
 | 10 | [Decision journal pattern finder](decision_journal/) | Done |
 | 11 | [Meeting cost calculator](meeting_cost_calculator/) | Done |
-| 12 | Reading list with a spoken summary | Next |
-| 13 | Personal finance explainer | |
+| 12 | [Reading list with a spoken summary](reading_list/) | Done |
+| 13 | Personal finance explainer | Next |
 | 14 | Photo organiser by event | |
 | 15 | Self-updating personal dashboard | |
 | 16 | Content-idea research assistant | |
