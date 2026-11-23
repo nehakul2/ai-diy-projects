@@ -16,6 +16,14 @@ from inbox_cleanup.prompt import SYSTEM
 MAX_EMAILS = 50
 
 
+def sort_emails(emails: list[str]) -> str:
+    """Suggest an action for each email and return the Markdown plan. Used by the CLI and the test page."""
+    if not emails:
+        raise ValueError("No emails found. Separate pasted emails with a line containing only ---")
+    batch = "\n\n".join(f'<email number="{i}">\n{e}\n</email>' for i, e in enumerate(emails[:MAX_EMAILS], 1))
+    return ask(SYSTEM, batch)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("source", help="A .txt file of pasted emails, an .eml file, or a folder of .eml files.")
@@ -31,9 +39,8 @@ def main() -> None:
         print(f"Found {len(emails)} emails; sorting the first {MAX_EMAILS}. Start small!", file=sys.stderr)
         emails = emails[:MAX_EMAILS]
 
-    batch = "\n\n".join(f'<email number="{i}">\n{e}\n</email>' for i, e in enumerate(emails, 1))
     print(f"Sorting {len(emails)} emails...", file=sys.stderr)
-    result = ask(SYSTEM, batch)
+    result = sort_emails(emails)
     print(result)
     if args.output:
         Path(args.output).write_text(result + "\n", encoding="utf-8")
