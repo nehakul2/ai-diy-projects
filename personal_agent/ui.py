@@ -1,20 +1,24 @@
 """Chat page for the personal agent: one assistant that uses every project."""
-import tempfile
+import hmac
+import os
+import uuid
 from pathlib import Path
 
 import streamlit as st
 
 from common.ui import pasted_key_for_call
 from personal_agent.agent import Agent
+from personal_agent.tools import HOSTED, UPLOADS
 
 TITLE = "Personal agent (chat)"
 ORDER = 0
 
-UPLOADS = Path(tempfile.gettempdir()) / "ai-diy-agent-uploads"
+# Shared version only: messages each visitor can send, so a link can't run up a big bill.
+MAX_MESSAGES = int(os.environ.get("AGENT_MAX_MESSAGES", "25"))
 EXAMPLES = [
     "Gift ideas for my dad, around $60, he loves gardening and jazz",
-    "What's on my job tracker this week?",
-    "Tidy my Downloads folder (just show me the plan first)",
+    "Check my trip: London to Tokyo via Doha, 3-17 March, Indian passport",
+    "What can you do?" if HOSTED else "Tidy my Downloads folder (just show me the plan first)",
     "Turn these notes into actions: call bank re card, Sam wants slides by Fri, book dentist",
 ]
 
@@ -39,14 +43,18 @@ def _attachment_note() -> str:
     f = st.session_state.get("agent_file")
     if not f or st.session_state.get("agent_file_sent") == f.file_id:
         return ""
-    UPLOADS.mkdir(exist_ok=True)
-    path = UPLOADS / Path(f.name).name
+    # Each chat gets its own random folder, so visitors never see each other's files.
+    folder = UPLOADS / st.session_state.setdefault("upload_dir", uuid.uuid4().hex)
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / Path(f.name).name
     path.write_bytes(f.getvalue())
     st.session_state["agent_file_sent"] = f.file_id
     return f"\n\n[Attached file: {path}]"
 
 
 def _ask(agent: Agent, text: str) -> None:
+    if HOSTED:
+        st.session_state["sent"] = st.session_state.get("sent", 0) + 1
     text = text + _attachment_note()
     st.session_state["chat"].append({"role": "user", "text": text})
     _show(st.session_state["chat"][-1])
@@ -70,11 +78,34 @@ def _confirm(agent: Agent, yes: bool) -> None:
     st.session_state["chat"].append({"role": "assistant", "text": icon + outcome})
 
 
+def password_ok() -> bool:
+    """Shared version: ask for AGENT_PASSWORD once per visit. No password set means no gate."""
+    expected = os.environ.get("AGENT_PASSWORD", "")
+    if not expected or st.session_state.get("password_ok"):
+        return True
+    entered = st.text_input("Password", type="password", help="Ask the person who shared this link.")
+    if entered and hmac.compare_digest(entered, expected):
+        st.session_state["password_ok"] = True
+        st.rerun()
+    if entered:
+        st.error("That password isn't right.")
+    return False
+
+
 def render() -> None:
     agent = _agent()
-    st.header("Your personal agent")
-    st.write("Ask for anything your projects can do, in plain words. It picks the right one. "
-             "Files: attach one below, or type its path (like `~/Downloads/statement.csv`).")
+    if HOSTED:
+        name = os.environ.get("AGENT_NAME", "").strip()
+        st.header(f"{name}'s AI assistant" if name else "AI assistant")
+        st.write("Ask for help in plain words: gift ideas, a trip check, turning notes into a to-do list, "
+                 "matching a resume to a job, explaining a bank statement, and more. "
+                 "Please share what worked and what didn't!")
+        if not password_ok():
+            return
+    else:
+        st.header("Your personal agent")
+        st.write("Ask for anything your projects can do, in plain words. It picks the right one. "
+                 "Files: attach one below, or type its path (like `~/Downloads/statement.csv`).")
 
     for entry in st.session_state["chat"]:
         _show(entry)
@@ -98,13 +129,18 @@ def render() -> None:
 
     with st.expander("📎 Attach a file (resume, bank export, calendar, emails...)"):
         st.file_uploader("File", key="agent_file", label_visibility="collapsed")
-        st.caption("It's saved to a temporary folder on this computer and only its path goes into the chat.")
+        st.caption("Your file is sent with your next message. Don't upload anything you wouldn't want "
+                   "processed by an AI service." if HOSTED else
+                   "It's saved to a temporary folder on this computer and only its path goes into the chat.")
 
     if st.button("Start a new chat"):
-        for key in ("agent", "chat", "agent_file_sent"):
+        for key in ("agent", "chat", "agent_file_sent"):  # "sent" is kept, so the limit still applies
             st.session_state.pop(key, None)
         st.rerun()
 
-    text = st.chat_input("Ask me anything...", disabled=bool(agent.pending))
+    used_up = HOSTED and st.session_state.get("sent", 0) >= MAX_MESSAGES
+    if used_up:
+        st.info("That's the message limit for this demo. Thanks for trying it!")
+    text = st.chat_input("Ask me anything...", disabled=bool(agent.pending) or used_up)
     if text:
         _ask(agent, text)

@@ -7,6 +7,8 @@ shown to you in full and also sent back to Claude.
 Nothing here moves files. The two tidy-up tools only make a plan; moving files (or
 undoing a move) is requested with confirm_* tools and only happens after you say yes.
 """
+import os
+import tempfile
 from pathlib import Path
 
 from content_ideas.prompt import PLATFORMS
@@ -16,6 +18,23 @@ HANDLERS: dict = {}         # tool name -> function
 LABELS: dict = {}           # tool name -> friendly name shown while it runs
 
 MAX_FILE_CHARS = 60000
+
+# Shared (hosted) mode: set AGENT_HOSTED=1 on a server that friends use. Tools that touch the
+# server's own folders or your personal data files are left out, and file paths are only
+# allowed inside the uploads folder (each visitor gets their own, unguessable subfolder).
+HOSTED = os.environ.get("AGENT_HOSTED", "").strip().lower() in ("1", "true", "yes")
+UPLOADS = Path(tempfile.gettempdir()) / "ai-diy-agent-uploads"
+LOCAL_ONLY = {
+    "plan_downloads_tidy", "plan_photo_tidy", "confirm_tidy", "confirm_undo_tidy",  # move files
+    "list_jobs", "add_job", "update_job",                                              # your job tracker
+    "save_to_library", "find_in_library", "mark_library_item",                         # your library
+    "log_decision", "list_decisions", "review_decision", "decision_patterns",          # your journal
+    "build_dashboard", "list_content_ideas", "draft_post",                             # your dashboard / bank
+}
+
+
+def available_tools() -> list[dict]:
+    return [t for t in TOOLS if not (HOSTED and t["name"] in LOCAL_ONLY)]
 
 
 def tool(name: str, label: str, description: str, properties: dict | None = None, required: list | None = None):
@@ -35,6 +54,8 @@ def s(description: str) -> dict:
 
 def _path(p: str) -> Path:
     path = Path(p.strip().strip("'\"")).expanduser()
+    if HOSTED and not path.resolve().is_relative_to(UPLOADS.resolve()):
+        raise ValueError("In the shared version I can only open files you attach with the 📎 button.")
     if not path.exists():
         raise ValueError(f"I can't find {path}. Check the path (tip: drag the file into Terminal to copy its path).")
     return path
@@ -400,7 +421,8 @@ def _dashboard(agent, local_only: bool = False) -> str:
       ["niche"])
 def _ideas(agent, niche: str, audience: str = "", platform: str = "LinkedIn", count: int = 5) -> str:
     from content_ideas.ideas import card, research
-    return "\n\n".join(card(i) for i in research(niche, audience, platform or "LinkedIn", count=int(count)))
+    ideas = research(niche, audience, platform or "LinkedIn", count=int(count), keep=not HOSTED)
+    return "\n\n".join(card(i) for i in ideas)
 
 
 @tool("list_content_ideas", "Content-idea assistant (bank)", "Show the saved idea bank.")
@@ -454,7 +476,7 @@ def _faq(agent, question: str, folder: str = "") -> str:
 def _notes(agent, question: str, folder: str = "", include_library: bool = False,
            include_decisions: bool = False) -> str:
     from ask_your_notes.notes import EXAMPLE_NOTES, ask_notes, build_index
-    extras = [x for x, on in (("library", include_library), ("decisions", include_decisions)) if on]
+    extras = [x for x, on in (("library", include_library), ("decisions", include_decisions)) if on and not HOSTED]
     notes = str(_path(folder)) if folder else ("" if extras else str(EXAMPLE_NOTES))
     # Library and journal change as you use them, so only cache plain folders.
     index = build_index(notes, extras) if extras else _index(("notes", notes), lambda: build_index(notes))
