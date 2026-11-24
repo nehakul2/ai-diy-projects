@@ -9,6 +9,7 @@ from pathlib import Path
 
 from common.claude import ask
 from decision_journal.prompt import PATTERNS_SYSTEM, SHARPEN_SCHEMA, SHARPEN_SYSTEM
+from common import storage
 
 OUTCOMES = ["better", "as expected", "worse", "too early to tell"]
 MIN_REVIEWED_FOR_PATTERNS = 3
@@ -19,16 +20,11 @@ def decisions_file() -> Path:
 
 
 def load() -> list[dict]:
-    path = decisions_file()
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    return storage.read_json("decisions", decisions_file())
 
 
 def save(items: list[dict]) -> None:
-    path = decisions_file()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(items, indent=2), encoding="utf-8")
-    tmp.replace(path)
+    storage.write_json("decisions", decisions_file(), items)
 
 
 def _check_date(value: str) -> str:

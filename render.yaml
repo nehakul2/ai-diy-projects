@@ -1,0 +1,26 @@
+# One-click setup on Render for the Personal Helper web app. See personal_agent/DEPLOY.md.
+services:
+  - type: web
+    name: personal-helper
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m personal_agent.web
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: AGENT_HOSTED
+        value: "1"
+      - key: FRIEND_QUESTION_LIMIT
+        value: "10"
+      - key: ANTHROPIC_API_KEY   # Render asks you for the ones marked sync: false
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: INVITE_CODE
+        sync: false
+      - key: AGENT_NAME
+        sync: false
+      - key: UNLIMITED_USERS
+        sync: false

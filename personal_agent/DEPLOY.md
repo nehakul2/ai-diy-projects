@@ -1,62 +1,85 @@
-# Share the agent with friends (a link + password)
+# Put the Personal Helper online for friends
 
-This puts a chat-only version online, free, on Streamlit Community Cloud. Friends open
-a link, type a password, and chat. No installing anything.
+This puts your agent online as its own app: a link friends open on their phone or computer.
+They sign in with a name and PIN, can ask **10 questions each** (you choose the number), and
+their job tracker, saved library, decision journal and idea bank are kept just for them.
+It runs on **your** Claude API key, so friends need nothing.
 
-**What friends can use:** notes into actions, gift ideas, inbox clean-up, trip checks,
-resume vs job matching, weekly planning, meeting costs, reading-list briefing, bank-export
-explainer, content ideas, and the team-FAQ / ask-your-notes demos (on the example files).
+On a phone, friends can add it to the home screen (Share → Add to Home Screen on iPhone,
+⋮ → Add to Home screen / Install app on Android) and it opens like an app.
 
-**What stays on your own computer only:** Downloads and photo tidy-ups, your job tracker,
-saved library, decision journal, dashboard and idea bank. The shared version can't see
-anyone's computer, and it doesn't keep anyone's data. Friends attach files with the 📎 button.
+Two free accounts, about 15 minutes, no Terminal.
 
 ## 1. Protect your API key (2 minutes)
 
-Friends' messages use your Claude API key, so set a monthly limit first:
+1. Go to https://console.anthropic.com → **API Keys** → **Create key**. Name it "helper app".
+   (Deleting this key later switches the app off instantly, without touching your own key.)
+2. **Settings → Limits**: set a monthly spend limit you're comfortable with, e.g. $10.
 
-1. Go to https://console.anthropic.com → **Settings → Limits** (or **Billing**).
-2. Set a monthly spend limit you're happy with, e.g. $10.
-3. Optional but tidy: under **API Keys**, create a new key just for this, named
-   "friends demo". You can delete it any time to switch the demo off instantly.
+Roughly: one question costs a few cents; ones that search the web (gifts, trips) cost more.
+10 friends × 10 questions is usually a few dollars.
 
-Each visitor can send 25 messages per visit (change with `AGENT_MAX_MESSAGES`).
+## 2. Database: Supabase (5 minutes)
 
-## 2. Deploy (about 5 minutes)
+1. Go to https://supabase.com and sign up (GitHub sign-in is fine).
+2. **New project**. Name `personal-helper`, make up a **database password** (save it), pick the
+   region nearest you, Free plan. Wait a minute while it's created.
+3. Click **Connect** at the top. Under **Session pooler**, copy the **URI**. It looks like
+   `postgresql://postgres.abcd:[YOUR-PASSWORD]@aws-0-eu-west-2.pooler.supabase.com:5432/postgres`
+4. Replace `[YOUR-PASSWORD]` with your database password. That's your **DATABASE_URL**.
 
-1. Make sure the agent is merged into `main` on GitHub.
-2. Go to https://share.streamlit.io and **sign in with GitHub**. Allow it to see the
-   `ai-diy-projects` repository (it may ask about private repositories: say yes).
-3. Click **Create app** → **Deploy a public app from GitHub** (the *app* is public, it is
-   the password that keeps strangers out; your code stays private).
-4. Fill in:
-   - Repository: `nehakul2/ai-diy-projects`
-   - Branch: `main`
-   - Main file path: `agent_app.py`
-   - App URL: pick something, e.g. `neha-assistant`
-5. Open **Advanced settings**. Choose Python **3.12**, and paste this into **Secrets**,
-   with your own key and a password you choose:
+The app creates its tables by itself. (Free Supabase projects pause after a week with no use;
+Supabase emails you and one click wakes it up.)
 
-   ```toml
-   ANTHROPIC_API_KEY = "sk-ant-..."
-   AGENT_HOSTED = "1"
-   AGENT_PASSWORD = "pick-a-password"
-   AGENT_NAME = "Neha"
-   ```
+## 3. App: Render (5 minutes)
 
-6. Click **Deploy**. The first start takes a few minutes. When the chat appears, try it.
-7. Send friends the link (e.g. `https://neha-assistant.streamlit.app`) and the password.
+1. Go to https://render.com and **sign up with GitHub**. Let it see `ai-diy-projects`.
+2. **New → Blueprint** → pick `nehakul2/ai-diy-projects`, branch `main`. Render reads `render.yaml`.
+3. Fill in the values it asks for:
+   - `ANTHROPIC_API_KEY`: the "helper app" key from step 1
+   - `DATABASE_URL`: from step 2
+   - `INVITE_CODE`: a word friends need to get in, e.g. `sunflower42` (no spaces)
+   - `AGENT_NAME`: `Neha` (the app is called "Neha's Helper")
+   - `UNLIMITED_USERS`: the name you'll sign in with yourself, e.g. `neha`, so your own questions
+     aren't limited (leave empty if you don't mind the limit)
+4. Click **Apply**. The first build takes a few minutes. When it says **Live**, copy the address,
+   e.g. `https://personal-helper-ab12.onrender.com`, and open it to try it.
 
-## Changing things later
+**Free plan note:** the free server sleeps after 15 minutes unused, so the first visit after a
+break takes about a minute to load. To avoid that, switch to **Starter** ($7/month) in the
+service's **Settings → Instance type**.
 
-- **Update the app:** merge changes into `main`; it redeploys by itself.
-- **Change the password or key:** share.streamlit.io → your app → ⋮ → **Settings → Secrets**.
-- **Switch it off:** ⋮ → **Delete**, or delete the "friends demo" key in the Console.
-- **See usage/cost:** https://console.anthropic.com → **Usage**.
-- If nobody uses it for a while, it goes to sleep; the next visitor clicks
-  "wake up" and waits about a minute.
+## 4. Invite friends
 
-## Getting feedback
+Send the address with the invite code on the end, so it's filled in for them:
 
-The app doesn't collect feedback itself (it forgets each chat when the tab closes).
-Ask friends to message you, or share a short Google Form link alongside the app link.
+> I built an AI helper and I'd love your feedback! Open
+> https://personal-helper-ab12.onrender.com/?invite=sunflower42
+> pick a name and a PIN, and try things like gift ideas, checking a trip, turning notes into a
+> to-do list, or pasting a job ad to track it. You get 10 questions. Tell me what worked and what didn't!
+
+## Looking after it
+
+- **Change the limit, invite code or key:** Render → your service → **Environment**. It restarts by itself.
+- **Give someone more questions:** Supabase → **Table Editor** → `agent_data` → delete their row
+  named `usage` (resets them to 0 used).
+- **Someone forgot their PIN:** Supabase → `agent_users` → delete their row. They sign in again with
+  a new PIN; their saved data is still there.
+- **See costs:** console.anthropic.com → **Usage**.
+- **Updates:** merge into `main` and Render redeploys by itself.
+- **Switch it off:** Render → your service → **Settings → Suspend**, or delete the "helper app" key.
+
+## What friends can and can't do
+
+They can: notes into actions, gift ideas, inbox clean-up (paste or attach emails), trip checks,
+resume vs job (attach a resume), weekly planning (attach a calendar .ics), meeting costs, reading-list
+briefings, bank-statement explainer (attach a CSV), content ideas, and their own job tracker,
+library, decision journal and idea bank.
+
+They can't: tidy folders or sort photos (the app can't see their computer), or use your dashboard.
+Attached files are kept only on the server's temporary disk and are cleared when it restarts.
+
+## Later: a phone app
+
+The web page only talks to the app's API (`/api/login`, `/api/me`, `/api/chat`, `/api/new`;
+see the top of `personal_agent/web.py`). A phone app can use exactly the same API and accounts.

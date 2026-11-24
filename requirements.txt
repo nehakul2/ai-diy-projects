@@ -1,3 +1,7 @@
 anthropic>=2.12
 streamlit>=1.40
 pillow>=10
+uvicorn>=0.30
+psycopg[binary]>=3.2  # database for the shared web app (each friend's own data)
+starlette>=0.40       # the Personal Helper web app
+python-multipart>=0.0.9

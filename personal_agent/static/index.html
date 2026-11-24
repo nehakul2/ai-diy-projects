@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cut">
+  <title>Personal Helper</title>
+  <meta name="description" content="A personal AI helper for gifts, trips, notes, job hunting and more.">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="manifest" href="/static/manifest.webmanifest">
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/static/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Helper">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- Sign in (shared version only) -->
+  <section id="login" class="screen" hidden>
+    <div class="card login-card">
+      <img src="/static/icon.svg" alt="" class="logo">
+      <h1 id="login-title">Personal Helper</h1>
+      <p class="muted">An AI helper for everyday jobs: gift ideas, trip checks, turning notes into
+        to-dos, job hunting and more. First time? Pick a name and a PIN you'll remember.</p>
+      <form id="login-form" autocomplete="on">
+        <label>Invite code<input id="invite" name="invite" autocomplete="off" required></label>
+        <label>Your name<input id="name" name="username" autocomplete="username" required
+          placeholder="e.g. asha" pattern="[A-Za-z0-9][A-Za-z0-9 ._\-]{1,29}"></label>
+        <label>PIN<input id="pin" name="password" type="password" autocomplete="current-password" required
+          minlength="4" inputmode="numeric" placeholder="at least 4 characters"></label>
+        <button type="submit" class="primary">Start</button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- Chat -->
+  <section id="app" class="screen" hidden>
+    <header class="topbar">
+      <div class="brand"><img src="/static/icon.svg" alt="" class="logo-sm"><span id="app-title">Personal Helper</span></div>
+      <div class="top-actions">
+        <span id="left" class="pill" hidden></span>
+        <button id="new-chat" class="ghost" title="Start a new chat">＋ New</button>
+        <button id="sign-out" class="ghost" title="Sign out" hidden>Sign out</button>
+      </div>
+    </header>
+
+    <main id="messages" aria-live="polite">
+      <div id="welcome" class="welcome">
+        <h2 id="hello">Hi! What can I help with?</h2>
+        <p class="muted">Ask in plain words. I'll pick the right tool and do the work.</p>
+        <div id="examples" class="chips"></div>
+      </div>
+    </main>
+
+    <div id="confirm" class="confirm" hidden>
+      <p id="confirm-text"></p>
+      <div class="row"><button id="confirm-yes" class="primary">Confirm</button><button id="confirm-no" class="ghost">Cancel</button></div>
+    </div>
+
+    <form id="composer" class="composer">
+      <div id="attachment" class="attachment" hidden><span id="attachment-name"></span><button type="button" id="attachment-clear" aria-label="Remove file">✕</button></div>
+      <div class="row">
+        <label class="attach" title="Attach a file (resume, bank statement, calendar, emails)">
+          <input id="file" type="file" hidden>📎
+        </label>
+        <textarea id="input" rows="1" placeholder="Ask me anything..." aria-label="Message"></textarea>
+        <button id="send" class="send" type="submit" aria-label="Send">➤</button>
+      </div>
+    </form>
+  </section>
+
+  <script src="/static/markdown.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -11,6 +11,7 @@ from pathlib import Path
 
 from common.claude import WEB_FETCH, ask
 from saved_content_organiser.prompt import SCHEMA, SYSTEM
+from common import storage
 
 MAX_TEXT_CHARS = 20000
 KINDS = ["article", "video", "podcast", "paper", "thread", "tool", "other"]
@@ -21,16 +22,11 @@ def library_file() -> Path:
 
 
 def load() -> list[dict]:
-    path = library_file()
-    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    return storage.read_json("library", library_file())
 
 
 def save(items: list[dict]) -> None:
-    path = library_file()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(items, indent=2), encoding="utf-8")
-    tmp.replace(path)
+    storage.write_json("library", library_file(), items)
 
 
 def tag_counts(items: list[dict]) -> Counter:
