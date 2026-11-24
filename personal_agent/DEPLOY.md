@@ -28,7 +28,19 @@ Roughly: one question costs a few cents; ones that search the web (gifts, trips)
    `postgresql://postgres.abcd:[YOUR-PASSWORD]@aws-0-eu-west-2.pooler.supabase.com:5432/postgres`
 4. Replace `[YOUR-PASSWORD]` with your database password. That's your **DATABASE_URL**.
 
-The app creates its tables by itself. (Free Supabase projects pause after a week with no use;
+5. Optional but recommended: in the left menu open **SQL Editor → New query**, paste this and click
+   **Run**. It creates the tables now and locks them so only the app can read them (the app also does
+   this by itself on first start):
+
+   ```sql
+   create table if not exists agent_users (user_id text primary key, passcode_hash text not null, created text not null);
+   create table if not exists agent_data (user_id text not null, name text not null, data text not null,
+     updated text not null, primary key (user_id, name));
+   alter table agent_users enable row level security;
+   alter table agent_data enable row level security;
+   ```
+
+Use the **Session pooler** link, not "Direct connection": Render can't reach the direct one. (Free Supabase projects pause after a week with no use;
 Supabase emails you and one click wakes it up.)
 
 ## 3. App: Render (5 minutes)

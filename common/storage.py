@@ -87,6 +87,9 @@ def _run(sql: str, params: tuple = (), fetch: bool = False):
         if not _ready:
             for statement in SCHEMA:
                 conn.execute(statement)
+            if mark == "%s":  # Postgres (Supabase): block its public API from reading these tables;
+                for table in ("agent_users", "agent_data"):  # this app's own login isn't affected
+                    conn.execute(f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY")
             _ready = True
         cur = conn.execute(sql.replace("?", mark), params)
         return cur.fetchone() if fetch else None
