@@ -24,7 +24,7 @@ lives in `common/`.
 | 16 | [Content-idea research assistant](content_ideas/) | Done |
 | 17 | [Team FAQ bot with sources](team_faq_bot/) | Done |
 | 18 | [Ask-your-notes assistant](ask_your_notes/) | Done |
-| ⭐ | [Personal agent: one chat that uses all of them](personal_agent/), also as a [Claude connector for friends](personal_agent/CONNECTOR.md) | Done |
+| ⭐ | [Personal agent: one chat that uses all of them](personal_agent/), also a [standalone app to share with friends](personal_agent/DEPLOY.md) | Done |
 
 ## Setup (once)
 

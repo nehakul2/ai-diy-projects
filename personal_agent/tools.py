@@ -19,22 +19,31 @@ LABELS: dict = {}           # tool name -> friendly name shown while it runs
 
 MAX_FILE_CHARS = 60000
 
-# Shared (hosted) mode: set AGENT_HOSTED=1 on a server that friends use. Tools that touch the
-# server's own folders or your personal data files are left out, and file paths are only
-# allowed inside the uploads folder (each visitor gets their own, unguessable subfolder).
+# Shared (hosted) mode: set AGENT_HOSTED=1 on a server that friends use. Tools that move files are
+# always left out. Tools that save personal data (trackers, library, journal, idea bank) work only
+# when DATABASE_URL is set, so each signed-in person gets their own data (see common/storage.py).
+# File paths are only allowed inside the uploads folder (each visitor gets their own subfolder).
 HOSTED = os.environ.get("AGENT_HOSTED", "").strip().lower() in ("1", "true", "yes")
 UPLOADS = Path(tempfile.gettempdir()) / "ai-diy-agent-uploads"
-LOCAL_ONLY = {
-    "plan_downloads_tidy", "plan_photo_tidy", "confirm_tidy", "confirm_undo_tidy",  # move files
-    "list_jobs", "add_job", "update_job",                                              # your job tracker
-    "save_to_library", "find_in_library", "mark_library_item",                         # your library
-    "log_decision", "list_decisions", "review_decision", "decision_patterns",          # your journal
-    "build_dashboard", "list_content_ideas", "draft_post",                             # your dashboard / bank
+FILE_TOOLS = {"plan_downloads_tidy", "plan_photo_tidy", "confirm_tidy", "confirm_undo_tidy", "build_dashboard"}
+DATA_TOOLS = {
+    "list_jobs", "add_job", "update_job",                                              # job tracker
+    "save_to_library", "find_in_library", "mark_library_item",                         # library
+    "log_decision", "list_decisions", "review_decision", "decision_patterns",          # journal
+    "list_content_ideas", "draft_post",                                                # idea bank
 }
 
 
+def blocked_tools() -> set:
+    if not HOSTED:
+        return set()
+    from common import storage
+    return FILE_TOOLS if storage.per_user() else FILE_TOOLS | DATA_TOOLS
+
+
 def available_tools() -> list[dict]:
-    return [t for t in TOOLS if not (HOSTED and t["name"] in LOCAL_ONLY)]
+    blocked = blocked_tools()
+    return [t for t in TOOLS if t["name"] not in blocked]
 
 
 def tool(name: str, label: str, description: str, properties: dict | None = None, required: list | None = None):
@@ -46,6 +55,12 @@ def tool(name: str, label: str, description: str, properties: dict | None = None
         LABELS[name] = label
         return fn
     return register
+
+
+def _saving() -> bool:
+    """True where saving personal data is allowed (always locally; with a database when shared)."""
+    from common import storage
+    return not HOSTED or storage.per_user()
 
 
 def s(description: str) -> dict:
@@ -248,7 +263,8 @@ def _plan_week(agent, tasks: str, calendar: str = "", calendar_path: str = "", w
 def _list_jobs(agent, show_all: bool = False) -> str:
     from job_search_tracker import store
     from job_search_tracker.tracker import table
-    return table(store.load(), show_all=bool(show_all))
+    return table(store.load(), show_all=bool(show_all)).replace(
+        "Add one with: python -m job_search_tracker.main add --posting job.txt", "Paste a job posting to add one.")
 
 
 @tool("add_job", "Job tracker (add)",
@@ -421,7 +437,7 @@ def _dashboard(agent, local_only: bool = False) -> str:
       ["niche"])
 def _ideas(agent, niche: str, audience: str = "", platform: str = "LinkedIn", count: int = 5) -> str:
     from content_ideas.ideas import card, research
-    ideas = research(niche, audience, platform or "LinkedIn", count=int(count), keep=not HOSTED)
+    ideas = research(niche, audience, platform or "LinkedIn", count=int(count), keep=_saving())
     return "\n\n".join(card(i) for i in ideas)
 
 
@@ -476,7 +492,7 @@ def _faq(agent, question: str, folder: str = "") -> str:
 def _notes(agent, question: str, folder: str = "", include_library: bool = False,
            include_decisions: bool = False) -> str:
     from ask_your_notes.notes import EXAMPLE_NOTES, ask_notes, build_index
-    extras = [x for x, on in (("library", include_library), ("decisions", include_decisions)) if on and not HOSTED]
+    extras = [x for x, on in (("library", include_library), ("decisions", include_decisions)) if on and _saving()]
     notes = str(_path(folder)) if folder else ("" if extras else str(EXAMPLE_NOTES))
     # Library and journal change as you use them, so only cache plain folders.
     index = build_index(notes, extras) if extras else _index(("notes", notes), lambda: build_index(notes))

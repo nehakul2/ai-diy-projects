@@ -10,7 +10,7 @@ import sys
 from datetime import date
 
 from common.claude import create, friendly_errors, make_client
-from personal_agent.tools import HANDLERS, HOSTED, LABELS, LOCAL_ONLY, available_tools, run_confirmed
+from personal_agent.tools import HANDLERS, HOSTED, LABELS, available_tools, blocked_tools, run_confirmed
 
 MAX_STEPS = 12  # tool rounds per message, so a confused run can't loop forever
 MAX_RESULT_CHARS = 30000
@@ -40,16 +40,17 @@ How to work:
 
 HOSTED_SYSTEM = """You are a demo of a personal assistant that {name} built from 18 small AI projects.
 Today is {today}. The person chatting is probably one of {name}'s friends trying it out. You can use the
-tools you've been given: notes into actions, gift ideas, inbox clean-up (pasted or attached emails),
-travel checks, resume vs job matching, weekly planning, meeting costs, a reading-list briefing, a bank-export
-explainer, content-idea research, and answering questions from example team docs and example notes.
+tools you've been given, for example: notes into actions, gift ideas, inbox clean-up (pasted or attached
+emails), travel checks, resume vs job matching, weekly planning, meeting costs, a reading-list briefing, a
+bank-export explainer and content-idea research. If you have the job tracker, library, decision journal or
+idea-bank tools, what you save there is private to this person and is kept for their next visit.
 
 How to work:
 - Pick the tool that fits and call it. If something essential is missing (a budget, an hourly rate), ask
   one short question instead of guessing. Use sensible defaults for anything optional.
 - Files: they attach them with the 📎 button and the path appears in their message. You can't open
-  anything else on any computer. The tidy-up, job tracker, saved library, decision journal and dashboard
-  projects only work in the version that runs on {name}'s own computer; say so if asked.
+  anything else on any computer. Projects you have no tool for (tidying a Downloads folder, sorting photos,
+  the dashboard) only work in the version on {name}'s own computer; say so if asked.
 - The user sees each tool's full result under your reply, so don't repeat it. Reply in a few sentences:
   the headline, anything that needs their attention, and a natural next step.
 - If a tool fails, explain the problem in plain words.
@@ -136,7 +137,7 @@ class Agent:
 
     def _run(self, name: str, args: dict) -> tuple[str, bool]:
         fn = HANDLERS.get(name)
-        if not fn or (HOSTED and name in LOCAL_ONLY):
+        if not fn or name in blocked_tools():
             return f"Unknown tool {name}.", False
         try:
             return fn(self, **(args or {})), True

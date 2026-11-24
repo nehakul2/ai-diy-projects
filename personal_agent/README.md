@@ -37,17 +37,14 @@ Things to ask:
 **Files:** in the chat page, attach a file with "📎 Attach a file". In Terminal, type the
 path (tip: drag the file into the Terminal window to paste its path).
 
-## Add it to Claude (for you and your friends)
+## The standalone app (and sharing it with friends)
 
-The agent also runs as a **connector** that anyone can add inside their own Claude app.
-Claude does the thinking on their own plan (no API key from you), and each friend gets
-their own job tracker, library, journal and idea bank. Setup: [CONNECTOR.md](CONNECTOR.md).
+`python -m personal_agent.web` opens the agent as its own app at http://localhost:8000
+(on your Mac, everything works, using your own files). To put it online for friends, with a
+name + PIN sign-in, 10 questions each on your key and their own saved data, follow
+[DEPLOY.md](DEPLOY.md). Friends can add it to their phone's home screen.
 
-## Share the chat page instead
-
-`streamlit run agent_app.py` opens the chat on its own (no project pages). To put it
-online with a link and password for friends, follow [DEPLOY.md](DEPLOY.md). The shared
-version leaves out anything that touches files on a computer or your personal data.
+The older Streamlit chat page is still there: `streamlit run agent_app.py`.
 
 ## Safety
 
