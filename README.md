@@ -21,8 +21,8 @@ lives in `common/`.
 | 13 | [Personal finance explainer](finance_explainer/) | Done |
 | 14 | [Photo organiser by event](photo_organiser/) | Done |
 | 15 | [Self-updating personal dashboard](personal_dashboard/) | Done |
-| 16 | Content-idea research assistant | Next |
-| 17 | Team FAQ bot with sources | |
+| 16 | [Content-idea research assistant](content_ideas/) | Done |
+| 17 | Team FAQ bot with sources | Next |
 | 18 | Ask-your-notes assistant | |
 
 ## Setup (once)
