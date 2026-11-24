@@ -24,6 +24,7 @@ lives in `common/`.
 | 16 | [Content-idea research assistant](content_ideas/) | Done |
 | 17 | [Team FAQ bot with sources](team_faq_bot/) | Done |
 | 18 | [Ask-your-notes assistant](ask_your_notes/) | Done |
+| ⭐ | [Personal agent: one chat that uses all of them](personal_agent/) | Done |
 
 ## Setup (once)
 
@@ -52,7 +53,9 @@ From the repo root, with your virtual environment active:
 streamlit run app.py
 ```
 
-Your browser opens at http://localhost:8501. Pick a project in the left sidebar,
+Your browser opens at http://localhost:8501. The first page, **Personal agent (chat)**,
+lets you ask for anything in plain words and picks the right project for you
+(see [personal_agent/](personal_agent/)). Or pick a project in the left sidebar,
 fill in the form and press the button. The first time, Streamlit may ask for an
 email in the Terminal: just press Enter to skip. Press Ctrl-C in the Terminal to stop it.
 
