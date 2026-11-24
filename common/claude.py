@@ -1,6 +1,7 @@
 """Shared helper for calling Claude. Every project in this repo uses ask()."""
 import os
 import sys
+from contextlib import contextmanager
 
 import anthropic
 
@@ -41,6 +42,49 @@ def _key_hint(key: str | None) -> str:
     return hint + (f"; looks wrong because {' and '.join(problems)}." if problems else ".")
 
 
+
+def make_client() -> anthropic.Anthropic:
+    key = _clean_key()
+    return anthropic.Anthropic(api_key=key) if key else anthropic.Anthropic()
+
+
+def create(client: anthropic.Anthropic, **kwargs):
+    """One Messages API call with this repo's defaults (model, refusal fallback)."""
+    kwargs.setdefault("model", MODEL)
+    return client.beta.messages.create(
+        # If the main model declines, the API retries on a suitable fallback model.
+        betas=["server-side-fallback-2026-07-01"],
+        fallbacks="default",
+        **kwargs,
+    )
+
+
+@contextmanager
+def friendly_errors():
+    """Turn API errors into a short, plain message (raised as SystemExit)."""
+    key = _clean_key()
+    try:
+        yield
+    except TypeError as e:
+        if "authentication" not in str(e):
+            raise
+        sys.exit("No Claude API key found. Set ANTHROPIC_API_KEY (see README).")
+    except anthropic.AuthenticationError as e:
+        sys.exit(
+            f"The API rejected the key (401: {_api_message(e)}).\n{_key_hint(key)}\n"
+            "Check the key is active at console.anthropic.com > API Keys, then run "
+            "export ANTHROPIC_API_KEY=... again in this same window."
+        )
+    except anthropic.PermissionDeniedError as e:
+        sys.exit(f"The key works but isn't allowed to do this (403): {_api_message(e)}")
+    except anthropic.RateLimitError:
+        sys.exit("Hit the API rate limit. Wait a minute and try again.")
+    except anthropic.APIStatusError as e:
+        sys.exit(f"Claude API error {e.status_code}: {_api_message(e)}")
+    except anthropic.APIConnectionError:
+        sys.exit("Couldn't reach the Claude API. Check your internet connection.")
+
+
 def ask(
     system: str,
     user: str | list,
@@ -60,43 +104,15 @@ def ask(
         output_config["format"] = {"type": "json_schema", "schema": schema}
     messages = [{"role": "user", "content": user}]
     extra = {"tools": tools} if tools else {}
-    try:
-        key = _clean_key()
-        client = anthropic.Anthropic(api_key=key) if key else anthropic.Anthropic()
+    with friendly_errors():
+        client = make_client()
         for _ in range(MAX_CONTINUATIONS + 1):
-            response = client.beta.messages.create(
-                model=MODEL,
-                max_tokens=max_tokens,
-                system=system,
-                messages=messages,
-                output_config=output_config,
-                # If the main model declines, the API retries on a suitable fallback model.
-                betas=["server-side-fallback-2026-07-01"],
-                fallbacks="default",
-                **extra,
-            )
+            response = create(client, system=system, messages=messages, max_tokens=max_tokens,
+                              output_config=output_config, **extra)
             # Long web-search turns can pause; send the reply back and the server resumes.
             if response.stop_reason != "pause_turn":
                 break
             messages = [messages[0], {"role": "assistant", "content": response.content}]
-    except TypeError as e:
-        if "authentication" not in str(e):
-            raise
-        sys.exit("No Claude API key found. Set ANTHROPIC_API_KEY (see README).")
-    except anthropic.AuthenticationError as e:
-        sys.exit(
-            f"The API rejected the key (401: {_api_message(e)}).\n{_key_hint(key)}\n"
-            "Check the key is active at console.anthropic.com > API Keys, then run "
-            "export ANTHROPIC_API_KEY=... again in this same window."
-        )
-    except anthropic.PermissionDeniedError as e:
-        sys.exit(f"The key works but isn't allowed to do this (403): {_api_message(e)}")
-    except anthropic.RateLimitError:
-        sys.exit("Hit the API rate limit. Wait a minute and try again.")
-    except anthropic.APIStatusError as e:
-        sys.exit(f"Claude API error {e.status_code}: {_api_message(e)}")
-    except anthropic.APIConnectionError:
-        sys.exit("Couldn't reach the Claude API. Check your internet connection.")
 
     if response.stop_reason == "refusal":
         sys.exit("Claude declined this request.")

@@ -43,7 +43,8 @@ with st.sidebar:
     if not projects:
         st.warning("No projects with a ui.py found yet.")
         st.stop()
-    by_label = {f"{getattr(m, 'ORDER', '')}. {m.TITLE}".lstrip(". "): m for m in projects}
+    # ORDER 0 (the personal agent) is shown without a number, at the top.
+    by_label = {(f"{m.ORDER}. {m.TITLE}" if getattr(m, "ORDER", None) else m.TITLE): m for m in projects}
     choice = by_label[st.radio("Project", list(by_label))]
     st.divider()
     api_key_box()
