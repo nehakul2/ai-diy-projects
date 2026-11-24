@@ -2,10 +2,10 @@
 
 Default location: ~/.ai-diy-projects/jobs.json. Set JOBS_FILE to use another file.
 """
-import json
 import os
 from datetime import date
 from pathlib import Path
+from common import storage
 
 STATUSES = ["saved", "applying", "applied", "interviewing", "offer", "rejected", "withdrawn"]
 ACTIVE = {"saved", "applying", "applied", "interviewing"}
@@ -23,18 +23,11 @@ def jobs_file() -> Path:
 
 
 def load() -> list[dict]:
-    path = jobs_file()
-    if not path.exists():
-        return []
-    return json.loads(path.read_text(encoding="utf-8"))
+    return storage.read_json("jobs", jobs_file())
 
 
 def save(jobs: list[dict]) -> None:
-    path = jobs_file()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(jobs, indent=2), encoding="utf-8")
-    tmp.replace(path)  # write-then-rename, so a crash can't leave a half-written file
+    storage.write_json("jobs", jobs_file(), jobs)
 
 
 def add(job: dict) -> dict:

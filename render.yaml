@@ -1,0 +1,22 @@
+# One-click setup on Render for the personal agent connector. See personal_agent/CONNECTOR.md.
+services:
+  - type: web
+    name: personal-agent
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m personal_agent.mcp_server --http
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: AGENT_HOSTED
+        value: "1"
+      - key: DATABASE_URL
+        sync: false   # Render asks you for it
+      - key: INVITE_CODE
+        sync: false
+      - key: ANTHROPIC_API_KEY   # optional: lets friends run projects with your key (capped below)
+        sync: false
+      - key: FRIEND_RUN_LIMIT
+        value: "10"

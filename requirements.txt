@@ -1,3 +1,6 @@
 anthropic>=2.12
 streamlit>=1.40
 pillow>=10
+mcp>=2.3              # the connector version of the personal agent
+uvicorn>=0.30
+psycopg[binary]>=3.2  # database for the shared connector (each friend's own data)

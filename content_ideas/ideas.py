@@ -9,6 +9,7 @@ from pathlib import Path
 
 from common.claude import WEB_SEARCH, ask
 from content_ideas.prompt import DRAFT_SYSTEM, PLATFORMS, RESEARCH_SCHEMA, RESEARCH_SYSTEM
+from common import storage
 
 
 def ideas_file() -> Path:
@@ -16,16 +17,11 @@ def ideas_file() -> Path:
 
 
 def load() -> list[dict]:
-    p = ideas_file()
-    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
+    return storage.read_json("ideas", ideas_file())
 
 
 def save(items: list[dict]) -> None:
-    p = ideas_file()
-    p.parent.mkdir(parents=True, exist_ok=True)
-    tmp = p.with_suffix(".tmp")
-    tmp.write_text(json.dumps(items, indent=2), encoding="utf-8")
-    tmp.replace(p)
+    storage.write_json("ideas", ideas_file(), items)
 
 
 SCORES = ("timeliness", "audience_fit", "originality")
