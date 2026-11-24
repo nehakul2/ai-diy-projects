@@ -22,8 +22,8 @@ lives in `common/`.
 | 14 | [Photo organiser by event](photo_organiser/) | Done |
 | 15 | [Self-updating personal dashboard](personal_dashboard/) | Done |
 | 16 | [Content-idea research assistant](content_ideas/) | Done |
-| 17 | Team FAQ bot with sources | Next |
-| 18 | Ask-your-notes assistant | |
+| 17 | [Team FAQ bot with sources](team_faq_bot/) | Done |
+| 18 | Ask-your-notes assistant | Next |
 
 ## Setup (once)
 
