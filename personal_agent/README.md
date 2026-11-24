@@ -37,6 +37,12 @@ Things to ask:
 **Files:** in the chat page, attach a file with "📎 Attach a file". In Terminal, type the
 path (tip: drag the file into the Terminal window to paste its path).
 
+## Share it with friends
+
+`streamlit run agent_app.py` opens the chat on its own (no project pages). To put it
+online with a link and password for friends, follow [DEPLOY.md](DEPLOY.md). The shared
+version leaves out anything that touches files on a computer or your personal data.
+
 ## Safety
 
 - Moving files always takes two steps: a preview first, then a **Confirm** button

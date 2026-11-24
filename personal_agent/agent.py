@@ -10,7 +10,7 @@ import sys
 from datetime import date
 
 from common.claude import create, friendly_errors, make_client
-from personal_agent.tools import HANDLERS, LABELS, TOOLS, run_confirmed
+from personal_agent.tools import HANDLERS, HOSTED, LABELS, LOCAL_ONLY, available_tools, run_confirmed
 
 MAX_STEPS = 12  # tool rounds per message, so a confused run can't loop forever
 MAX_RESULT_CHARS = 30000
@@ -38,13 +38,31 @@ How to work:
 - Plain, friendly language. No jargon."""
 
 
+HOSTED_SYSTEM = """You are a demo of a personal assistant that {name} built from 18 small AI projects.
+Today is {today}. The person chatting is probably one of {name}'s friends trying it out. You can use the
+tools you've been given: notes into actions, gift ideas, inbox clean-up (pasted or attached emails),
+travel checks, resume vs job matching, weekly planning, meeting costs, a reading-list briefing, a bank-export
+explainer, content-idea research, and answering questions from example team docs and example notes.
+
+How to work:
+- Pick the tool that fits and call it. If something essential is missing (a budget, an hourly rate), ask
+  one short question instead of guessing. Use sensible defaults for anything optional.
+- Files: they attach them with the 📎 button and the path appears in their message. You can't open
+  anything else on any computer. The tidy-up, job tracker, saved library, decision journal and dashboard
+  projects only work in the version that runs on {name}'s own computer; say so if asked.
+- The user sees each tool's full result under your reply, so don't repeat it. Reply in a few sentences:
+  the headline, anything that needs their attention, and a natural next step.
+- If a tool fails, explain the problem in plain words.
+- Plain, friendly language. If they ask what you can do, give a short list with an example for each."""
+
+
 def _blocks_text(content) -> str:
     return "".join(b.text for b in content if b.type == "text").strip()
 
 
 class Agent:
     def __init__(self, name: str = "", effort: str = "medium"):
-        self.name = name or os.environ.get("AGENT_NAME", "").strip() or "the user"
+        self.name = name or os.environ.get("AGENT_NAME", "").strip() or ("the builder" if HOSTED else "the user")
         self.effort = effort
         self.messages: list = []
         self.plans: dict = {}        # plan_id -> tidy-up plan made in this chat
@@ -80,12 +98,12 @@ class Agent:
         on_tool(label) is called before each tool runs, so a UI can show progress.
         """
         self.messages.append({"role": "user", "content": text})
-        system = SYSTEM.format(name=self.name, today=f"{date.today():%A %d %B %Y}")
+        system = (HOSTED_SYSTEM if HOSTED else SYSTEM).format(name=self.name, today=f"{date.today():%A %d %B %Y}")
         results = []
         with friendly_errors():
             client = make_client()
             for _ in range(MAX_STEPS):
-                response = create(client, system=system, messages=self.messages, tools=TOOLS,
+                response = create(client, system=system, messages=self.messages, tools=available_tools(),
                                   max_tokens=16000, output_config={"effort": self.effort})
                 # Keep the whole reply (including thinking blocks) so the next turn has full context.
                 self.messages.append({"role": "assistant", "content": response.content})
@@ -118,7 +136,7 @@ class Agent:
 
     def _run(self, name: str, args: dict) -> tuple[str, bool]:
         fn = HANDLERS.get(name)
-        if not fn:
+        if not fn or (HOSTED and name in LOCAL_ONLY):
             return f"Unknown tool {name}.", False
         try:
             return fn(self, **(args or {})), True
@@ -133,7 +151,7 @@ class Agent:
 def describe_tools() -> str:
     """A short list of what the agent can do (used by the CLI's 'help')."""
     seen = []
-    for t in TOOLS:
+    for t in available_tools():
         label = LABELS[t["name"]].split(" (")[0]
         if label not in seen and not label.startswith("Ask to"):
             seen.append(label)
@@ -141,4 +159,4 @@ def describe_tools() -> str:
 
 
 if __name__ == "__main__":  # quick check: python -m personal_agent.agent
-    print(json.dumps([t["name"] for t in TOOLS], indent=1), file=sys.stderr)
+    print(json.dumps([t["name"] for t in available_tools()], indent=1), file=sys.stderr)
