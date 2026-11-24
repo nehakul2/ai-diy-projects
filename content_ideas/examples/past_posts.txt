@@ -1,0 +1,16 @@
+POST 1
+I shipped a feature last month that nobody used.
+Not because it was bad. Because I never asked the 3 customers who requested it how they'd actually use it.
+Lesson: a feature request is a symptom, not a spec.
+What's the most-requested feature you regret building?
+
+POST 2
+My weekly planning takes 20 minutes now instead of 2 hours.
+The trick: I stopped planning tasks and started planning outcomes.
+Monday: write the 3 outcomes that would make this week a win.
+Friday: check them honestly.
+Everything else is noise.
+
+POST 3
+Hot take: most product roadmaps are just wish lists with dates.
+If your roadmap doesn't say what you'll stop doing, it isn't a strategy.
